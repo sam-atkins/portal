@@ -1,4 +1,9 @@
 {% extends "home/base.html" %}
 {% block content %}
   <h1>Home</h1>
+  {% if user.is_authenticated %}
+    Hi {{ user.username }}!
+  {% else %}
+    <p>You are not logged in</p>
+  {% endif %}
 {% endblock %}
