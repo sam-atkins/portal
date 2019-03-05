@@ -10,7 +10,7 @@ virtualenv -p python3 env
 source env/bin/activate
 
 # install requirements
-pip install -r requirements.txt
+pip install -r requirements-dev.txt
 
 # confirm django is installed, will return the version number from requirements.txt
 python -m django --version
