@@ -2,7 +2,14 @@
 {% block login %}
 {% block nav %}
 {% endblock %}
-<div class="container">
+<!-- gutter -->
+<div class="container px-lg-5">
+  <div class="row mx-lg-n5">
+    <div class="col py-3 px-lg-5"></div>
+  </div>
+</div>
+<!-- gutter end -->
+<div class="row">
   <form method="post">
     {% csrf_token %}
     <div class="form-group">
