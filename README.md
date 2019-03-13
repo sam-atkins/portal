@@ -2,7 +2,7 @@
 
 ## Install
 
-```
+```bash
 docker-compose up --build
 ```
 
@@ -10,6 +10,20 @@ docker-compose up --build
 
 ```bash
 docker-compose up
+```
+
+## Tests
+
+```bash
+# Make sure the Docker container is running and in a new Terminal run
+docker-compose exec web-portal /bin/bash
+
+# to run the test suite
+python manage.py test
+
+# to run coverage report
+coverage run --source='.' manage.py test
+coverage report
 ```
 
 ## Django Install
