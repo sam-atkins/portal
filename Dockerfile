@@ -11,7 +11,7 @@ WORKDIR /opt/app
 COPY . /opt/app
 
 RUN pip install --upgrade pip
-RUN pip install --no-cache-dir --no-warn-script-location -r /opt/app/$PIP_REQUIREMENTS --user
+RUN pip install -r /opt/app/$PIP_REQUIREMENTS
 
 EXPOSE 8000
 ENV PYTHONPATH=$PYTHONPATH:/opt/app/
