@@ -1,0 +1,17 @@
+version: '3'
+
+services:
+  web-portal:
+    restart: always
+    build:
+      context: .
+      args:
+        PIP_REQUIREMENTS: requirements-dev.txt
+    volumes:
+      - .:/code
+    ports:
+      - "8000:8000"
+    entrypoint: python3
+    command: /opt/app/manage.py runserver 0.0.0.0:8000
+    environment:
+      stage: local
