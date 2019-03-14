@@ -9,7 +9,11 @@ docker-compose up --build
 ## Dev
 
 ```bash
+# run the Django project and unit tests
 docker-compose up
+
+# just run the Django project
+docker-compose up portal
 ```
 
 ## Tests
@@ -20,6 +24,9 @@ docker-compose exec web-portal /bin/bash
 
 # to run the test suite
 python manage.py test
+
+# to run the test suite for an app e.g. {home}
+python manage.py test home
 
 # to run coverage report
 coverage run --source='.' manage.py test
