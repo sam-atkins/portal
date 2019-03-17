@@ -11,9 +11,17 @@ class HomeViewsLoggedInUserTestCase(TestCase):
         response = self.client.get('/')
         self.assertEqual(response.status_code, 200)
 
+    def test_logged_in_user_index_renders_home_html(self):
+        response = self.client.get('/')
+        self.assertTemplateUsed(response, 'home/base.html', 'home/home.html')
+
     def test_logged_in_user_home_returns_200(self):
         response = self.client.get('/home/')
         self.assertEqual(response.status_code, 200)
+
+    def test_logged_in_user_home_renders_home_html(self):
+        response = self.client.get('/home/')
+        self.assertTemplateUsed(response, 'home/base.html', 'home/home.html')
 
 
 class HomeViewsTestCase(TestCase):
@@ -35,6 +43,11 @@ class HomeViewsTestCase(TestCase):
             msg_prefix='',
             fetch_redirect_response=True)
 
+    def test_logged_out_user_index_renders_login_html(self):
+        response = self.client.get('/', follow=True)
+        self.assertTemplateUsed(response, 'home/base.html',
+                                'registration/login.html')
+
     def test_home_redirects_returns_302(self):
         response = self.client.get('/home/')
         self.assertEqual(response.status_code, 302)
@@ -52,3 +65,8 @@ class HomeViewsTestCase(TestCase):
             target_status_code=200,
             msg_prefix='',
             fetch_redirect_response=True)
+
+    def test_logged_out_user_home_renders_login_html(self):
+        response = self.client.get('/', follow=True)
+        self.assertTemplateUsed(response, 'home/base.html',
+                                'registration/login.html')
