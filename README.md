@@ -16,6 +16,32 @@ docker-compose up
 docker-compose up portal
 ```
 
+## Deploy
+
+Deployed to AWS Lambda with [Zappa](https://github.com/Miserlou/Zappa). Read the docs for a list of commands.
+
+Frequent commands listed below, replace `dev` with the appropriate {stage}:
+
+```bash
+# activate a virtual env
+source env/bin/activate
+
+# first time deploy
+zappa deploy dev
+
+# update an existing deploy
+zappa update dev
+
+# logs
+zappa tail dev
+
+# to apply db migrations
+zappa manage dev migrate
+
+# add an admin user, then need to log in and update the details
+zappa manage <stage> create_admin_user
+```
+
 ## Tests
 
 ```bash
