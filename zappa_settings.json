@@ -1,0 +1,13 @@
+{
+  "dev": {
+    "django_settings": "portal.settings",
+    "profile_name": "dev__sam",
+    "project_name": "portal",
+    "runtime": "python3.6",
+    "keep_warm": false,
+    "s3_bucket": "sam-portal-zappa-dev",
+    "environment_variables": {
+      "stage": "dev"
+    }
+  }
+}
