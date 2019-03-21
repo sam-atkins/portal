@@ -11,6 +11,8 @@ class HomeViewsLoggedInUserTestCase(TestCase):
         response = self.client.get('/')
         self.assertEqual(response.status_code, 200)
 
+    # TODO(sam) refine this test and others once home view develops
+    # ie what is rendered for logged in vs logged out user
     def test_logged_in_user_index_renders_home_html(self):
         response = self.client.get('/')
         self.assertTemplateUsed(response, 'home/base.html', 'home/home.html')
@@ -25,23 +27,9 @@ class HomeViewsLoggedInUserTestCase(TestCase):
 
 
 class HomeViewsTestCase(TestCase):
-    def test_index_redirects_returns_302(self):
-        response = self.client.get('/')
-        self.assertEqual(response.status_code, 302)
-
     def test_index_redirect_follow_returns_200(self):
         response = self.client.get('/', follow=True)
         self.assertEqual(response.status_code, 200)
-
-    def test_index_directs_to_login_view(self):
-        response = self.client.get('/')
-        self.assertRedirects(
-            response=response,
-            expected_url='/accounts/login/?next=/',
-            status_code=302,
-            target_status_code=200,
-            msg_prefix='',
-            fetch_redirect_response=True)
 
     def test_logged_out_user_index_renders_login_html(self):
         response = self.client.get('/', follow=True)
@@ -51,20 +39,6 @@ class HomeViewsTestCase(TestCase):
     def test_home_redirects_returns_302(self):
         response = self.client.get('/home/')
         self.assertEqual(response.status_code, 302)
-
-    def test_home_redirect_follow_returns_200(self):
-        response = self.client.get('/home/', follow=True)
-        self.assertEqual(response.status_code, 200)
-
-    def test_home_directs_to_login_view(self):
-        response = self.client.get('/home/')
-        self.assertRedirects(
-            response=response,
-            expected_url='/accounts/login/?next=/home/',
-            status_code=302,
-            target_status_code=200,
-            msg_prefix='',
-            fetch_redirect_response=True)
 
     def test_logged_out_user_home_renders_login_html(self):
         response = self.client.get('/', follow=True)
