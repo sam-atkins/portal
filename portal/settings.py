@@ -15,18 +15,19 @@ import os
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
+os.environ['project_config_dir'] = os.path.abspath(
+    os.path.join(BASE_DIR, 'settings'))
+
+# requires project_config_dir before importing
+# import manage_config  # noqa E402 F401
+from manage_config import Config, get_config  # noqa E402 F401
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/1.11/howto/deployment/checklist/
 
-# SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = '+_^74_c46ppq5g@v-^w79^$h3kv_6#!l#grtbpof7aglkolbra'
-
-# SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
-
-ALLOWED_HOSTS = []
-
+SECRET_KEY = get_config('SECRET_KEY')
+DEBUG = get_config('DEBUG', True)
+ALLOWED_HOSTS = get_config('ALLOWED_HOSTS', ['localhost', '127.0.0.1'])
 
 # Application definition
 
@@ -39,6 +40,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'zappa_django_utils',
 ]
 
 MIDDLEWARE = [
@@ -75,13 +77,18 @@ WSGI_APPLICATION = 'portal.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/1.11/ref/settings/#databases
 
+db_config = get_config('db', {})
+db_engine = db_config.get('engine')
+db_name = db_config.get('name')
+db_bucket = db_config.get('bucket', None)
+
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+        'ENGINE': db_engine,
+        'NAME': os.path.join(BASE_DIR, db_name),
+        'BUCKET': db_bucket,
     }
 }
-
 
 # Password validation
 # https://docs.djangoproject.com/en/1.11/ref/settings/#auth-password-validators
@@ -124,6 +131,5 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/1.11/howto/static-files/
 
 AUTH_USER_MODEL = 'users.CustomUser'
-LOGIN_REDIRECT_URL = '/home/'
-LOGOUT_REDIRECT_URL = '/'
 STATIC_URL = '/static/'
+STATICFILES_STORAGE = get_config('STATICFILES_STORAGE')
