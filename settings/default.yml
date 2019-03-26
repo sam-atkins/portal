@@ -1,5 +1,5 @@
+project_name: portal
 SECRET_KEY: '+_^74_c46ppq5g@v-^w79^$h3kv_6#!l#grtbpof7aglkolbra'
 DEBUG: False
-db:
-  engine: django.db.backends.sqlite3
-  name: db.sqlite3
+DB_ENGINE: django.db.backends.sqlite3
+DB_NAME: db.sqlite3

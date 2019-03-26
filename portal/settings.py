@@ -19,7 +19,6 @@ os.environ['project_config_dir'] = os.path.abspath(
     os.path.join(BASE_DIR, 'settings'))
 
 # requires project_config_dir before importing
-# import manage_config  # noqa E402 F401
 from manage_config import Config, get_config  # noqa E402 F401
 
 # Quick-start development settings - unsuitable for production
@@ -77,16 +76,19 @@ WSGI_APPLICATION = 'portal.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/1.11/ref/settings/#databases
 
-db_config = get_config('db', {})
-db_engine = db_config.get('engine')
-db_name = db_config.get('name')
-db_bucket = db_config.get('bucket', None)
+DB_ENGINE = get_config('DB_ENGINE', 'django.db.backends.sqlite3')
+DB_NAME = get_config('DB_NAME', 'db.sqlite3')
+DB_BUCKET = get_config('DB_BUCKET', None)
+stage = get_config('stage', 'local')
+
+if stage == 'local':
+    DB_NAME = os.path.join(BASE_DIR, DB_NAME)
 
 DATABASES = {
     'default': {
-        'ENGINE': db_engine,
-        'NAME': os.path.join(BASE_DIR, db_name),
-        'BUCKET': db_bucket,
+        'ENGINE': DB_ENGINE,
+        'NAME': DB_NAME,
+        'BUCKET': DB_BUCKET,
     }
 }
 
