@@ -57,20 +57,20 @@ class Config:
         Returns:
             dict: remote config
         """
-        client = boto3.client('ssm')
+        client = boto3.client("ssm")
         response = {}
         try:
             payload = client.get_parameters_by_path(
-                Path=parameters_path, Recursive=True, WithDecryption=True)
+                Path=parameters_path, Recursive=True, WithDecryption=True
+            )
 
-            remote_params = payload.get('Parameters', [])
+            remote_params = payload.get("Parameters", [])
             for param in remote_params:
-                name = param.get('Name', None)
-                name = name.split('/')[-1]
-                value = param.get('Value', None)
+                name = param.get("Name", None)
+                name = name.split("/")[-1]
+                value = param.get("Value", None)
 
-                deserialised_value = self._deserialise(
-                    self, name, value)
+                deserialised_value = self._deserialise(self, name, value)
                 evaluated_value = self._evaluate(self, name, deserialised_value)
                 response[name] = evaluated_value
             return response
@@ -87,24 +87,24 @@ class Config:
             - remote config: remote_settings
         """
         anyconfig.merge(self.conf, os.environ.copy())
-        stage = self.conf.get('stage', None)
-        project_config_dir = self.conf.get('project_config_dir', None)
+        stage = self.conf.get("stage", None)
+        project_config_dir = self.conf.get("project_config_dir", None)
 
         project_default_config_file_path = os.path.join(
-            project_config_dir, 'default.yml')
+            project_config_dir, "default.yml"
+        )
         if os.path.exists(project_default_config_file_path):
-            anyconfig.merge(self.conf,
-                            anyconfig.load(project_default_config_file_path))
+            anyconfig.merge(self.conf, anyconfig.load(project_default_config_file_path))
 
-        project_stage_config_file_path = os.path.join(project_config_dir,
-                                                      f'{stage}.yml')
+        project_stage_config_file_path = os.path.join(
+            project_config_dir, f"{stage}.yml"
+        )
         if os.path.exists(project_stage_config_file_path):
-            anyconfig.merge(self.conf,
-                            anyconfig.load(project_stage_config_file_path))
-        remote_settings = self.conf.get('use_remote_settings', None)
+            anyconfig.merge(self.conf, anyconfig.load(project_stage_config_file_path))
+        remote_settings = self.conf.get("use_remote_settings", None)
         if remote_settings:
-            project_name = self.conf.get('project_name', None)
-            parameters_path = f'/{project_name}/{stage}/'
+            project_name = self.conf.get("project_name", None)
+            parameters_path = f"/{project_name}/{stage}/"
             remote_conf = self.get_remote_params(self, parameters_path)
             anyconfig.merge(self.conf, remote_conf)
 
