@@ -17,6 +17,9 @@ services:
       - ./:/opt/app
     environment:
       stage: local
+      AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
+      AWS_DEFAULT_REGION: ${AWS_REGION}
+      AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
   portal-test:
     build:
       context: .
@@ -25,7 +28,6 @@ services:
     volumes:
       - .:/code
     entrypoint: ''
-    # TODO(sam) change command
     command: coverage run --source='.' manage.py test -v 2
     volumes:
       - ./:/opt/app

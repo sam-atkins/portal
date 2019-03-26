@@ -6,6 +6,14 @@
 docker-compose up --build
 ```
 
+In order to test deployment locally, change the stage in the docker-compose file to a remote stage e.g. `dev`. Docker requires some environment variables. If these are available in your Terminal session it will pick them up, otherwise add them to a `.env` file e.g.
+
+```
+AWS_ACCESS_KEY_ID=XXXXXXXX
+AWS_SECRET_ACCESS_KEY=XXXXXXXX
+AWS_REGION=XXXXXXXX
+```
+
 ## Dev
 
 ```bash
@@ -20,11 +28,16 @@ docker-compose up portal
 
 Deployed to AWS Lambda with [Zappa](https://github.com/Miserlou/Zappa). Read the docs for a list of commands.
 
+
+
 Frequent commands listed below, replace `dev` with the appropriate {stage}:
 
 ```bash
 # activate a virtual env
 source env/bin/activate
+
+# Zappa needs the project's requirements to be installed in the virtual env
+pip install -r requirements.txt
 
 # first time deploy
 zappa deploy dev

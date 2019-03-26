@@ -1,0 +1,7 @@
+use_remote_settings: false
+DEBUG: true
+ALLOWED_HOSTS:
+  - 'localhost'
+  - '127.0.0.1'
+  - '0.0.0.0'
+STATICFILES_STORAGE: django.contrib.staticfiles.storage.StaticFilesStorage
