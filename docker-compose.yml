@@ -5,8 +5,6 @@ services:
     restart: always
     build:
       context: .
-      args:
-        PIP_REQUIREMENTS: requirements-dev.txt
     volumes:
       - .:/code
     ports:
@@ -23,12 +21,12 @@ services:
   portal-test:
     build:
       context: .
-      args:
-        PIP_REQUIREMENTS: requirements-dev.txt
     volumes:
       - .:/code
     entrypoint: ''
-    command: coverage run --source='.' manage.py test -v 2
+    command: >
+      sh -c "coverage run --source='.' manage.py test -v 2 &&
+             coverage report"
     volumes:
       - ./:/opt/app
     environment:

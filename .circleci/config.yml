@@ -1,0 +1,37 @@
+version: 2
+jobs:
+  build:
+    working_directory: ~/circleci
+    docker:
+      # CircleCI Python images available at: https://hub.docker.com/r/circleci/python/
+      - image: circleci/python:3.6.8
+        environment:
+          PIPENV_VENV_IN_PROJECT: true
+    steps:
+      - checkout
+      - run: sudo chown -R circleci:circleci /usr/local/bin
+      - run: sudo chown -R circleci:circleci /usr/local/lib/python3.6/site-packages
+      - restore_cache:
+          key: requirements_1-{{ .Branch }}-{{ checksum "Pipfile.lock" }}
+      - run:
+          command: |
+            sudo pip install pipenv
+            pipenv install --dev
+      - save_cache:
+          key: requirements_1-{{ .Branch }}-{{ checksum "Pipfile.lock" }}
+          paths:
+            - ".venv"
+            - "/usr/local/bin"
+            - "/usr/local/lib/python3.6/site-packages"
+      - run:
+          name: run tests
+          command: |
+            pipenv run python manage.py test
+      - run:
+          name: coverage report
+          command: |
+            pipenv run coverage run --omit='/home/circleci/circleci/.venv/*' manage.py test -v 2 &&
+            pipenv run coverage html -d artifacts
+      - store_artifacts:
+          path: artifacts
+          destination: cov

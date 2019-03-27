@@ -1,8 +1,6 @@
-FROM python:3.7.2-stretch
+FROM python:3.6.8-stretch
 
 LABEL maintainer="<samatkins@outlook.com>"
-
-ARG PIP_REQUIREMENTS
 
 ENV PYTHONUNBUFFERED 1
 
@@ -10,8 +8,8 @@ RUN mkdir /opt/app
 WORKDIR /opt/app
 COPY . /opt/app
 
-RUN pip install --upgrade pip
-RUN pip install -r /opt/app/$PIP_REQUIREMENTS
+RUN pip install pipenv
+RUN pipenv install --system --dev --ignore-pipfile
 
 EXPOSE 8000
 ENV PYTHONPATH=$PYTHONPATH:/opt/app/
