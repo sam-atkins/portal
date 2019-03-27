@@ -3,6 +3,13 @@
 [![CircleCI](https://circleci.com/gh/sam-atkins/portal/tree/release.svg?style=svg)](https://circleci.com/gh/sam-atkins/portal/tree/release)
 <a href="https://github.com/ambv/black"><img alt="Code style: black" src="https://img.shields.io/badge/code%20style-black-000000.svg"></a>
 
+## Table of Contents
+
+- [Install](#install)
+- [Dev](#dev)
+- [Tests](#tests)
+- [Deploy](#deploy)
+
 ## Install
 
 ```bash
@@ -27,37 +34,6 @@ docker-compose up
 docker-compose up portal
 ```
 
-## Deploy
-
-Deployed to AWS Lambda with [Zappa](https://github.com/Miserlou/Zappa). Read the docs for a list of commands.
-
-
-
-Frequent commands listed below, replace `dev` with the appropriate {stage}:
-
-```bash
-# activate a virtual env
-source env/bin/activate
-
-# Zappa needs the project's requirements to be installed in the virtual env
-pip install -r requirements.txt
-
-# first time deploy
-zappa deploy dev
-
-# update an existing deploy
-zappa update dev
-
-# logs
-zappa tail dev
-
-# to apply db migrations
-zappa manage dev migrate
-
-# add an admin user, then need to log in and update the details
-zappa manage <stage> create_admin_user
-```
-
 ## Tests
 
 ```bash
@@ -75,20 +51,34 @@ coverage run --source='.' manage.py test
 coverage report
 ```
 
-## Django Install
+## Deploy
 
-**Deprecated**
+Deployed to AWS Lambda with [Zappa](https://github.com/Miserlou/Zappa), refer to their docs for a full list of commands.
+
+Frequent commands listed below, replace `dev` with the appropriate {stage}:
 
 ```bash
-# create a virtualenv
-virtualenv -p python3 env
+# initialize a Python 3 virtual environment
+pipenv --three
 
-# activate the virtualenv
-source env/bin/activate
+# activate pipenv shell
+pipenv shell
 
-# install requirements
-pip install -r requirements-dev.txt
+# Zappa needs the project's requirements to be installed in the virtual env
+pipenv install
 
-# confirm django is installed, will return the version number from requirements.txt
-python -m django --version
+# first time deploy
+zappa deploy dev
+
+# update an existing deploy
+zappa update dev
+
+# logs
+zappa tail dev
+
+# to apply db migrations
+zappa manage dev migrate
+
+# add an admin user, then log in and update the details
+zappa manage <stage> create_admin_user
 ```
