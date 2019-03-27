@@ -1,6 +1,0 @@
-anyconfig==0.9.8
-boto3==1.9.120
-django-storages==1.7.1
-Django==2.1.7
-zappa-django-utils==0.4.0
-zappa==0.47.1
