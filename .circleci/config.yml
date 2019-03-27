@@ -32,7 +32,8 @@ jobs:
           command: |
             pipenv run coverage run --omit='/home/circleci/circleci/.venv/*' manage.py test -v 2 &&
             pipenv run coverage html -d artifacts
-      - store_artifacts:
-          path: artifacts
       - store_test_results:
           path: artifacts
+      - store_artifacts:
+          path: artifacts
+          destination: tr1
