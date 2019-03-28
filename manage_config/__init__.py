@@ -11,7 +11,7 @@ class Config:
 
     conf = {}
 
-    def _deserialise(self, name, value):
+    def _deserialise(cls, name, value):
         """Deserialise JSON values to Python
 
         Args:
@@ -29,7 +29,7 @@ class Config:
         else:
             return value
 
-    def _evaluate(self, name, value):
+    def _evaluate(cls, name, value):
         """Literal evaluation of a string containing a Python expression
 
         Args:
@@ -47,7 +47,7 @@ class Config:
         else:
             return value
 
-    def get_remote_params(self, parameters_path):
+    def get_remote_params(cls, parameters_path):
         """Fetches remote config from AWS Systems Manager Param Store
 
         Args:
@@ -70,15 +70,15 @@ class Config:
                 name = name.split("/")[-1]
                 value = param.get("Value", None)
 
-                deserialised_value = self._deserialise(self, name, value)
-                evaluated_value = self._evaluate(self, name, deserialised_value)
+                deserialised_value = cls._deserialise(name, value)
+                evaluated_value = cls._evaluate(name, deserialised_value)
                 response[name] = evaluated_value
             return response
         except Exception as ex:
             raise Exception from ex
 
     @classmethod
-    def make(self):
+    def make(cls):
         """Makes the conf object, merging in the following order:
 
             - ENV
@@ -86,27 +86,28 @@ class Config:
             - stage config: {stage}.yml
             - remote config: remote_settings
         """
-        anyconfig.merge(self.conf, os.environ.copy())
-        stage = self.conf.get("stage", None)
-        project_config_dir = self.conf.get("project_config_dir", None)
+        anyconfig.merge(cls.conf, os.environ.copy())
+        stage = cls.conf.get("stage", None)
+        project_config_dir = cls.conf.get("project_config_dir", '.')
 
         project_default_config_file_path = os.path.join(
             project_config_dir, "default.yml"
         )
         if os.path.exists(project_default_config_file_path):
-            anyconfig.merge(self.conf, anyconfig.load(project_default_config_file_path))
+            anyconfig.merge(cls.conf, anyconfig.load(project_default_config_file_path))
 
         project_stage_config_file_path = os.path.join(
             project_config_dir, f"{stage}.yml"
         )
         if os.path.exists(project_stage_config_file_path):
-            anyconfig.merge(self.conf, anyconfig.load(project_stage_config_file_path))
-        remote_settings = self.conf.get("use_remote_settings", None)
+            anyconfig.merge(cls.conf, anyconfig.load(project_stage_config_file_path))
+        remote_settings = cls.conf.get("use_remote_settings", None)
         if remote_settings:
-            project_name = self.conf.get("project_name", None)
+            project_name = cls.conf.get("project_name", None)
             parameters_path = f"/{project_name}/{stage}/"
-            remote_conf = self.get_remote_params(self, parameters_path)
-            anyconfig.merge(self.conf, remote_conf)
+            remote_conf = cls.get_remote_params(cls, parameters_path)
+            anyconfig.merge(cls.conf, remote_conf)
+        print(cls.conf)
 
 
 def get_config(key_name, default=None):
