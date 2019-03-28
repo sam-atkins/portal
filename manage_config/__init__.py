@@ -107,7 +107,6 @@ class Config:
             parameters_path = f"/{project_name}/{stage}/"
             remote_conf = cls.get_remote_params(cls, parameters_path)
             anyconfig.merge(cls.conf, remote_conf)
-        print(cls.conf)
 
 
 def get_config(key_name, default=None):
