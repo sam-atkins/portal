@@ -4,7 +4,7 @@ target-version = ['py36', 'py37', 'py38']
 include = '\.pyi?$'
 exclude = '''
 /(
-    \.eggs
+  \.eggs
   | \.git
   | \.hg
   | \.mypy_cache
