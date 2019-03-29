@@ -6,12 +6,10 @@ import anyconfig
 import boto3
 
 
-class Config:
-    """Merges in config objects to make one conf object"""
+class RemoteSettings:
+    """Methods to fetch and transform remote settings"""
 
-    conf = {}
-
-    def _deserialise(cls, name, value):
+    def _deserialise(self, name, value):
         """Deserialise JSON values to Python
 
         Args:
@@ -24,12 +22,14 @@ class Config:
         if isinstance(value, str):
             try:
                 return json.loads(value)
-            except Exception as ex:
-                raise Exception(ex)
+            except json.JSONDecodeError:
+                raise RemoteConfigurationJSONDecodeError(
+                    f'value of item {name} is not valid JSON')
+
         else:
             return value
 
-    def _evaluate(cls, name, value):
+    def _evaluate(self, name, value):
         """Literal evaluation of a string containing a Python expression
 
         Args:
@@ -47,7 +47,7 @@ class Config:
         else:
             return value
 
-    def get_remote_params(cls, parameters_path):
+    def get_remote_params(self, parameters_path):
         """Fetches remote config from AWS Systems Manager Param Store
 
         Args:
@@ -70,12 +70,28 @@ class Config:
                 name = name.split("/")[-1]
                 value = param.get("Value", None)
 
-                deserialised_value = cls._deserialise(name, value)
-                evaluated_value = cls._evaluate(name, deserialised_value)
+                deserialised_value = self._deserialise(name, value)
+                evaluated_value = self._evaluate(name, deserialised_value)
                 response[name] = evaluated_value
             return response
         except Exception as ex:
             raise Exception from ex
+
+
+class RemoteConfigurationJSONDecodeError(Exception):
+    """Raised when a ParameterStore item fails to be deserialised"""
+
+
+class Config:
+    """Merges in config objects to make one conf object"""
+
+    conf = {}
+
+    @classmethod
+    def create_remote_settings_class(cls):
+        setting_class = RemoteSettings
+
+        return setting_class()
 
     @classmethod
     def make(cls):
@@ -88,7 +104,7 @@ class Config:
         """
         anyconfig.merge(cls.conf, os.environ.copy())
         stage = cls.conf.get("stage", None)
-        project_config_dir = cls.conf.get("project_config_dir", '.')
+        project_config_dir = cls.conf.get("project_config_dir", ".")
 
         project_default_config_file_path = os.path.join(
             project_config_dir, "default.yml"
@@ -105,7 +121,8 @@ class Config:
         if remote_settings:
             project_name = cls.conf.get("project_name", None)
             parameters_path = f"/{project_name}/{stage}/"
-            remote_conf = cls.get_remote_params(cls, parameters_path)
+            remote_settings_class = cls.create_remote_settings_class()
+            remote_conf = remote_settings_class.get_remote_params(parameters_path)
             anyconfig.merge(cls.conf, remote_conf)
 
 
