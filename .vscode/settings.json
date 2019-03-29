@@ -1,0 +1,13 @@
+{
+  "python.pythonPath": "/Users/samatkins/.local/share/virtualenvs/portal-GTKuRLXr/bin/python",
+  "cSpell.words": [
+      "Lconf"
+  ],
+  "python.linting.flake8Enabled": true,
+  "python.linting.enabled": true,
+  "python.formatting.provider": "black",
+  "[python]": {
+    "editor.formatOnSave": true,
+    "editor.formatOnPaste": false
+  }
+}
