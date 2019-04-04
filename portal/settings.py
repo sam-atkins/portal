@@ -18,7 +18,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 os.environ["project_config_dir"] = os.path.abspath(os.path.join(BASE_DIR, "settings"))
 
 # requires project_config_dir before importing
-from manage_conf import Config, get_config  # noqa E402 F401
+from manageconf import Config, get_config  # noqa E402 F401
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/1.11/howto/deployment/checklist/

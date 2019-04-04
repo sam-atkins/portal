@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "ee655a4fb0d1bad90cafb9d0d7dd6f5098e7e7f91ed92234823959f4d0c23a09"
+            "sha256": "52937d17491b14de3982ac20052b44bb205f7e09e8d8fb34c612fabafde61079"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -39,10 +39,10 @@
         },
         "botocore": {
             "hashes": [
-                "sha256:04e010070e7c170fc2ab44c1d2047fdad850b9f2fd8b49077eeb98e00a631f9c",
-                "sha256:a79024facd0c998eaa77a05753efe36b9f1968acadc40e4313a3bacf011f9685"
+                "sha256:4cf300ecd4a90da92a277c931f45bd36ef1ef1a7e180ec2075f1993db77e4e52",
+                "sha256:e1f34f70bbed6992d72d80c3360334a759858a39d73c186e9be7acbd13851898"
             ],
-            "version": "==1.12.126"
+            "version": "==1.12.128"
         },
         "certifi": {
             "hashes": [
@@ -140,13 +140,13 @@
             ],
             "version": "==0.20.0"
         },
-        "manage-conf": {
+        "manageconf": {
             "hashes": [
-                "sha256:5f65e9e1789fb7d61888450ab56b8bdbeea3b25445f9e2b797539c5c2cd0ce42",
-                "sha256:8d997311219eaed018a33caf9ae3b056f979f936d73e05701deefa0516028e2a"
+                "sha256:16866cfe1432c1729c1a746ad6790913b3a5f926182b5c139550f84ba6ced3b5",
+                "sha256:f9ae7a22ee0ecf5d8f9bdcab489368f0377655db8b285c7812fe93e242ba0929"
             ],
             "index": "pypi",
-            "version": "==0.1.4"
+            "version": "==0.1.5"
         },
         "placebo": {
             "hashes": [
@@ -250,10 +250,10 @@
         },
         "werkzeug": {
             "hashes": [
-                "sha256:96da23fa8ccecbc3ae832a83df5c722c11547d021637faacb0bec4dd2f4666c8",
-                "sha256:ca5c2dcd367d6c0df87185b9082929d255358f5391923269335782b213d52655"
+                "sha256:0a73e8bb2ff2feecfc5d56e6f458f5b99290ef34f565ffb2665801ff7de6af7a",
+                "sha256:7fad9770a8778f9576693f0cc29c7dcc36964df916b83734f4431c0e612a7fbc"
             ],
-            "version": "==0.15.1"
+            "version": "==0.15.2"
         },
         "wheel": {
             "hashes": [
