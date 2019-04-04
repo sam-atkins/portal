@@ -5,8 +5,6 @@ services:
     restart: always
     build:
       context: .
-    volumes:
-      - .:/code
     ports:
       - "8000:8000"
     entrypoint: python3
