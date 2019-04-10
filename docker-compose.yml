@@ -20,12 +20,10 @@ services:
     build:
       context: .
     volumes:
-      - .:/code
+      - ./:/opt/app
     entrypoint: ''
     command: >
       sh -c "coverage run --source='.' manage.py test -v 2 &&
              coverage report"
-    volumes:
-      - ./:/opt/app
     environment:
       stage: test
