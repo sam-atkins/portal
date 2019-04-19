@@ -8,8 +8,8 @@ RUN mkdir /opt/app
 WORKDIR /opt/app
 COPY . /opt/app
 
-RUN pip install pipenv
-RUN pipenv install --system --dev --ignore-pipfile
+ARG PIP_REQUIREMENTS=requirements.txt
+RUN python3 -m pip install -r ${PIP_REQUIREMENTS}
 
 EXPOSE 8000
 ENV PYTHONPATH=$PYTHONPATH:/opt/app/
