@@ -58,14 +58,14 @@ Deployed to AWS Lambda with [Zappa](https://github.com/Miserlou/Zappa), refer to
 Frequent commands listed below, replace `dev` with the appropriate {stage}:
 
 ```bash
-# initialize a Python 3 virtual environment
-pipenv --three
+# initialize a Python 3.6 virtual environment
+virtualenv -p python3.6 env
 
-# activate pipenv shell
-pipenv shell
+# activate the virtual env
+source env/bin/activate
 
 # Zappa needs the project's requirements to be installed in the virtual env
-pipenv install
+pip install requirements-dev.txt
 
 # first time deploy
 zappa deploy dev
