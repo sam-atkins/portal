@@ -1,0 +1,7 @@
+{
+  "project_name": "portal",
+  "DEBUG": false,
+  "SECRET_KEY": "+_^74_c46ppq5g@v-^w79^$h3kv_6#!l#grtbpof7aglkolbra",
+  "DB_ENGINE": "django.db.backends.sqlite3",
+  "DB_NAME": "db.sqlite3"
+}
