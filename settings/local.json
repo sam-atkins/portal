@@ -1,0 +1,6 @@
+{
+  "use_remote_settings": false,
+  "DEBUG": true,
+  "STATICFILES_STORAGE": "django.contrib.staticfiles.storage.StaticFilesStorage",
+  "ALLOWED_HOSTS": ["localhost", "127.0.0.1", "0.0.0.0"]
+}

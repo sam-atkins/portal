@@ -1,7 +1,7 @@
 {
   "dev": {
     "django_settings": "portal.settings",
-    "profile_name": "dev__sam",
+    "profile_name": "sam__dev",
     "project_name": "portal",
     "runtime": "python3.6",
     "keep_warm": false,

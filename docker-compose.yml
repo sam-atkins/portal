@@ -19,6 +19,8 @@ services:
   portal-test:
     build:
       context: .
+      args:
+        PIP_REQUIREMENTS: requirements-test.txt
     volumes:
       - ./:/opt/app
     entrypoint: ''
