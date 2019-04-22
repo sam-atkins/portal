@@ -1,7 +1,15 @@
 {% extends "home/base.html" %}
 {% block content %}
   {% if user.is_authenticated %}
-    Hi {{ user.username|capfirst }}!
+    <div>
+      <p>
+        Hi {{ user.username|capfirst }}!
+      </p>
+      <p>
+        It is {% now "jS M Y, H:i" %}.
+      </p>
+    </div>
+    {% include "home/weather.html" %}
   {% else %}
     <p>You are not logged in</p>
   {% endif %}
