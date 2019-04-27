@@ -2,5 +2,16 @@
   "use_remote_settings": false,
   "DEBUG": true,
   "STATICFILES_STORAGE": "django.contrib.staticfiles.storage.StaticFilesStorage",
-  "ALLOWED_HOSTS": ["localhost", "127.0.0.1", "0.0.0.0"]
+  "ALLOWED_HOSTS": ["*"],
+  "local_service_directory": {
+    "met_service": {
+      "local": {
+        "protocol": "http://",
+        "hostname": "localhost:",
+        "port": "3000/",
+        "path": "weather",
+        "version": "1"
+      }
+    }
+  }
 }
