@@ -10,8 +10,20 @@ import requests
 class Http:
     """HTTP requests to local or via AWS API Gateway (Lambda Proxy)"""
 
-    @classmethod
-    def make_local_request(cls, service_name: str, service_version: int, payload: dict):
+    def __init__(self):
+        self.headers = {
+            "Content-Type": "application/json",
+            "Accept": "*/*",
+            "Cache-Control": "no-cache",
+            "accept-encoding": "gzip, deflate",
+            "content-length": "19",
+            "Connection": "keep-alive",
+            "cache-control": "no-cache",
+        }
+
+    def make_local_request(
+        self, service_name: str, service_version: int, payload: dict
+    ):
         """Makes a HTTP request to a locally running service
 
         Args:
@@ -23,19 +35,12 @@ class Http:
         Returns:
             str: JSON response from the service
         """
-        url = cls._build_local_url(service_name=service_name)
+        url = self._build_local_url(service_name=service_name)
         json_payload = json.dumps({"name": "ldn"})
-        headers = {
-            "Content-Type": "application/json",
-            "Accept": "*/*",
-            "Cache-Control": "no-cache",
-            "accept-encoding": "gzip, deflate",
-            "content-length": "19",
-            "Connection": "keep-alive",
-            "cache-control": "no-cache",
-        }
         try:
-            response = requests.request("POST", url, data=json_payload, headers=headers)
+            response = requests.request(
+                "POST", url, data=json_payload, headers=self.headers
+            )
             if response.status_code <= 300:
                 return response.text
             else:
@@ -66,14 +71,13 @@ class Http:
                 f"Service not found. Local services with config "
                 f"are: {local_services_with_config}"
             )
-
         protocol = service_config.get("protocol")
         hostname = service_config.get("hostname")
         port = service_config.get("port")
         path = service_config.get("path")
         if port is None:
-            url = f"{protocol}{hostname}{path}"
+            url = f"{protocol}{hostname}/{path}"
         else:
-            url = f"{protocol}{hostname}{port}{path}"
-
+            url = f"{protocol}{hostname}:{port}/{path}"
+            print(url)
         return url
