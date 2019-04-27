@@ -6,10 +6,10 @@
         Hi {{ user.username|capfirst }}!
       </p>
       <p>
-        It is {% now "jS M Y, H:i" %}.
+        It is {% now "jS M Y, H:i T" %}.
       </p>
     </div>
-    {% include "home/weather.html" %}
+    {% include "home/weather_widget.html" %}
   {% else %}
     <p>You are not logged in</p>
   {% endif %}
