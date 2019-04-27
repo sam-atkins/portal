@@ -12,19 +12,7 @@
   </head>
   <body>
     <div class="container">
-      {% block nav %}
-        <ul class="nav justify-content-end">
-          {% if user.is_authenticated %}
-            <li class="nav-item">
-              <a class="nav-link active" href="{% url 'logout' %}">Logout</a>
-            </li>
-          {% else %}
-            <li class="nav-item">
-              <a class="nav-link" href="{% url 'login' %}">Login</a>
-            </li>
-          {% endif %}
-        </ul>
-      {% endblock %}
+      {% include "home/nav.html" %}
       {% block content %}{% endblock %}
       {% block login %}{% endblock %}
     </div>
