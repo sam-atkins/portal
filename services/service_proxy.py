@@ -39,6 +39,11 @@ class ServiceProxy:
                 decoded_data = cls._decode(data)
                 return decoded_data
             return data
+        # TODO(sam) determine if lambda invoke or API gateway
+        # service_directory = get_config("service_directory", {})
+        # service_config = service_directory.get(service_name, {})
+        # lambda_config = get_config(service_name, {})
+        # apigw_config = get_config(service_name, {})
 
     @classmethod
     def _is_local(cls):
@@ -50,6 +55,9 @@ class ServiceProxy:
         stage = get_config("stage")
         if stage == "local":
             return True
+        return False
+
+    # def _determine_
 
     @classmethod
     def _decode(cls, json_object: str) -> dict:

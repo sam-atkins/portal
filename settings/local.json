@@ -3,7 +3,7 @@
   "DEBUG": true,
   "STATICFILES_STORAGE": "django.contrib.staticfiles.storage.StaticFilesStorage",
   "ALLOWED_HOSTS": ["*"],
-  "local_service_directory": {
+  "service_directory": {
     "met_service": {
       "local": {
         "protocol": "https://",

@@ -4,7 +4,7 @@ import json
 from manageconf import get_config
 import requests
 
-from .exceptions import LocalServiceNotFoundError
+from .exceptions import ServiceNotFoundError
 
 
 class Http:
@@ -61,11 +61,11 @@ class Http:
         Returns:
             dict: headers
         """
-        local_service_directory = get_config("local_service_directory", {})
+        service_directory = get_config("service_directory", {})
         try:
-            service_config = local_service_directory.get(service_name).get("local")
+            service_config = service_directory.get(service_name).get("local")
         except AttributeError:
-            raise LocalServiceNotFoundError(local_service_directory)
+            raise ServiceNotFoundError(service_directory)
         request_type = service_config.get("request_type")
         # NOTE(sam) hard coded to one mock server, change if added more mock servers
         if request_type == "mock_server":
@@ -81,11 +81,11 @@ class Http:
         Returns:
             str: the url
         """
-        local_service_directory = get_config("local_service_directory", {})
+        service_directory = get_config("service_directory", {})
         try:
-            service_config = local_service_directory.get(service_name).get("local")
+            service_config = service_directory.get(service_name).get("local")
         except AttributeError:
-            raise LocalServiceNotFoundError(local_service_directory)
+            raise ServiceNotFoundError(service_directory)
         protocol = service_config.get("protocol")
         hostname = service_config.get("hostname")
         port = service_config.get("port")
