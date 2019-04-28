@@ -35,16 +35,18 @@ class Http:
         Returns:
             str: JSON response from the service
         """
-        headers = self._build_local_headers(service_name=service_name)
+        self._build_local_headers(service_name=service_name)
         url = self._build_local_url(service_name=service_name)
         json_payload = json.dumps(payload)
         try:
-            response = requests.request("POST", url, data=json_payload, headers=headers)
+            response = requests.request(
+                "POST", url, data=json_payload, headers=self.headers
+            )
             if response.status_code <= 300:
                 return response.text
             else:
                 response.raise_for_status
-        # TODO(sam) fine tune exception handling eg handle
+        # TODO(sam) fine tune exception handling
         except Exception as ex:
             # log to Cloudwatch
             print(ex)
@@ -65,12 +67,9 @@ class Http:
         except AttributeError:
             raise LocalServiceNotFoundError(local_service_directory)
         request_type = service_config.get("request_type")
+        # NOTE(sam) hard coded to one mock server, change if added more mock servers
         if request_type == "mock_server":
-            headers = self.headers
-            headers["x-api-key"] = get_config("POSTMAN_MOCK_MET_SERVER_API_KEY")
-            return headers
-        else:
-            return self.headers
+            self.headers["x-api-key"] = get_config("POSTMAN_MOCK_MET_SERVER_API_KEY")
 
     @classmethod
     def _build_local_url(cls, service_name: str) -> str:
