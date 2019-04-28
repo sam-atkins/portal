@@ -35,7 +35,7 @@ class Http:
         Returns:
             str: JSON response from the service
         """
-        headers = self._build_headers(service_name=service_name)
+        headers = self._build_local_headers(service_name=service_name)
         url = self._build_local_url(service_name=service_name)
         json_payload = json.dumps(payload)
         try:
@@ -50,7 +50,7 @@ class Http:
             print(ex)
             return {}
 
-    def _build_headers(self, service_name: str) -> str:
+    def _build_local_headers(self, service_name: str) -> str:
         """Builds the headers for local requests
 
         Args:
