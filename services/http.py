@@ -52,7 +52,7 @@ class Http:
             print(ex)
             return {}
 
-    def _build_local_headers(self, service_name: str) -> str:
+    def _build_local_headers(self, service_name: str):
         """Builds the headers for local requests
 
         Args:
@@ -67,9 +67,10 @@ class Http:
         except AttributeError:
             raise ServiceNotFoundError(service_directory)
         request_type = service_config.get("request_type")
-        # NOTE(sam) hard coded to one mock server, change if added more mock servers
         if request_type == "mock_server":
-            self.headers["x-api-key"] = get_config("POSTMAN_MOCK_MET_SERVER_API_KEY")
+            self.headers["x-api-key"] = get_config(
+                f"POSTMAN_MOCK_SERVER_API_KEY_{service_name.upper()}"
+            )
 
     @classmethod
     def _build_local_url(cls, service_name: str) -> str:
