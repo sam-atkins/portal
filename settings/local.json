@@ -6,10 +6,10 @@
   "local_service_directory": {
     "met_service": {
       "local": {
-        "protocol": "http://",
-        "hostname": "localhost",
-        "port": "3000",
-        "path": "weather",
+        "protocol": "https://",
+        "hostname": "bbfd7988-c3bd-4353-a21d-df934d90dd50.mock.pstmn.io",
+        "path": "Prod/weather",
+        "request_type": "mock_server",
         "version": "1"
       }
     }

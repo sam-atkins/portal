@@ -22,6 +22,7 @@ In order to test deployment locally, change the stage in the docker-compose file
 AWS_ACCESS_KEY_ID=XXXXXXXX
 AWS_SECRET_ACCESS_KEY=XXXXXXXX
 AWS_REGION=XXXXXXXX
+POSTMAN_MOCK_MET_SERVER_API_KEY=XXXXXXXX
 ```
 
 ## Dev
