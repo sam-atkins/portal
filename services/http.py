@@ -4,7 +4,7 @@ import json
 from manageconf import get_config
 import requests
 
-# from requests.exceptions import HTTPError
+from .exceptions import LocalServiceNotFoundError
 
 
 class Http:
@@ -35,22 +35,42 @@ class Http:
         Returns:
             str: JSON response from the service
         """
+        headers = self._build_headers(service_name=service_name)
         url = self._build_local_url(service_name=service_name)
-        json_payload = json.dumps({"name": "ldn"})
+        json_payload = json.dumps(payload)
         try:
-            response = requests.request(
-                "POST", url, data=json_payload, headers=self.headers
-            )
+            response = requests.request("POST", url, data=json_payload, headers=headers)
             if response.status_code <= 300:
                 return response.text
             else:
                 response.raise_for_status
+        # TODO(sam) fine tune exception handling eg handle
         except Exception as ex:
-            # urllib3.exceptions.NewConnectionError
-            # except HTTPError as ex:
             # log to Cloudwatch
             print(ex)
             return {}
+
+    def _build_headers(self, service_name: str) -> str:
+        """Builds the headers for local requests
+
+        Args:
+            service_name (str): the service to make the HTTP request to
+
+        Returns:
+            dict: headers
+        """
+        local_service_directory = get_config("local_service_directory", {})
+        try:
+            service_config = local_service_directory.get(service_name).get("local")
+        except AttributeError:
+            raise LocalServiceNotFoundError(local_service_directory)
+        request_type = service_config.get("request_type")
+        if request_type == "mock_server":
+            headers = self.headers
+            headers["x-api-key"] = get_config("POSTMAN_MOCK_MET_SERVER_API_KEY")
+            return headers
+        else:
+            return self.headers
 
     @classmethod
     def _build_local_url(cls, service_name: str) -> str:
@@ -66,11 +86,7 @@ class Http:
         try:
             service_config = local_service_directory.get(service_name).get("local")
         except AttributeError:
-            local_services_with_config = ", ".join(list(local_service_directory.keys()))
-            raise Exception(
-                f"Service not found. Local services with config "
-                f"are: {local_services_with_config}"
-            )
+            raise LocalServiceNotFoundError(local_service_directory)
         protocol = service_config.get("protocol")
         hostname = service_config.get("hostname")
         port = service_config.get("port")
@@ -79,5 +95,4 @@ class Http:
             url = f"{protocol}{hostname}/{path}"
         else:
             url = f"{protocol}{hostname}:{port}/{path}"
-            print(url)
         return url
