@@ -37,7 +37,7 @@ def logout_view(request):
 
 @login_required
 def home_view(request):
-    # TODO(sam) get payload from config i.e. default location
+    context = {"weather_data": False}
     default_location_short_name = get_config("default_location_short_name", "ldn")
     payload = {"name": default_location_short_name}
     weather_data = ServiceProxy.service_request(
@@ -46,10 +46,10 @@ def home_view(request):
         service_function_name="GetWeatherFunction",
         payload=payload,
     )
-    parsed_weather_data = parse_weather_data(weather_data=weather_data)
-    location = get_config("default_location_name", "London")
-    default_location = {"location": location}
-    context = {**default_location, **parsed_weather_data}
+    if weather_data:
+        location = get_config("default_location_name", "London")
+        parsed_weather_data = parse_weather_data(weather_data=weather_data)
+        context = {"weather_data": True, "location": location, **parsed_weather_data}
     return render(request, "home/home.html", context=context)
 
 

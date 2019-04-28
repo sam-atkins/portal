@@ -1,5 +1,6 @@
 <div>
   <h3>Weather</h3>
+  {% if weather_data %}
   <p>
     The weather in {{ location }} is currently {{ current_temp }}°C.
     Today is forecasted to be {{ current_summary|lower }}.
@@ -7,4 +8,7 @@
   <p>
     5 day forecast: {{ forecast_summary }}
   </p>
+  {% else %}
+  <p>Unable to get weather data</p>
+  {% endif %}
 </div>
