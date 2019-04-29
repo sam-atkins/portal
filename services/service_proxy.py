@@ -4,6 +4,7 @@ import json
 from manageconf import get_config
 
 from .http import Http
+from .exceptions import ServiceNotFoundError
 
 
 class ServiceProxy:
@@ -28,22 +29,38 @@ class ServiceProxy:
         Returns:
             dict: Response from the service
         """
-        if cls._is_local:
+        # TODO(sam) commented out for dev only
+        # if cls._is_local:
+        #     http = Http()
+        #     data = http.make_local_request(
+        #         service_name=service_name,
+        #         service_version=service_version,
+        #         payload=payload,
+        #     )
+        #     if isinstance(data, str):
+        #         return cls._decode(data)
+        #     return data
+        # TODO(sam) determine if lambda invoke or API gateway
+        service_directory = get_config("service_directory", {})
+        try:
+            service_config = service_directory.get(service_name, {})
+        except AttributeError:
+            raise ServiceNotFoundError(service_directory)
+        lambda_config = service_config.get("lambda", {})
+        if lambda_config:
+            # TODO(sam) instantiate lambda proxy etc
+            pass
+        api_gateway_config = service_config.get("api_gateway", {})
+        if api_gateway_config:
             http = Http()
-            data = http.make_local_request(
+            data = http.make_api_gateway_request(
                 service_name=service_name,
                 service_version=service_version,
                 payload=payload,
             )
             if isinstance(data, str):
-                decoded_data = cls._decode(data)
-                return decoded_data
+                return cls._decode(data)
             return data
-        # TODO(sam) determine if lambda invoke or API gateway
-        # service_directory = get_config("service_directory", {})
-        # service_config = service_directory.get(service_name, {})
-        # lambda_config = get_config(service_name, {})
-        # apigw_config = get_config(service_name, {})
 
     @classmethod
     def _is_local(cls):
@@ -56,8 +73,6 @@ class ServiceProxy:
         if stage == "local":
             return True
         return False
-
-    # def _determine_
 
     @classmethod
     def _decode(cls, json_object: str) -> dict:
