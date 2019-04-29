@@ -4,6 +4,7 @@ import json
 from manageconf import get_config
 
 from .http import Http
+from .aws_lambda import LambdaProxy
 from .exceptions import ServiceNotFoundError
 
 
@@ -11,19 +12,12 @@ class ServiceProxy:
     """Interface to Services via local HTTP, AWS API Gateway or AWS Lambda"""
 
     @classmethod
-    def service_request(
-        cls,
-        service_name: str,
-        service_version: int,
-        service_function_name: str,
-        payload: dict,
-    ):
+    def service_request(cls, service_name: str, service_version: int, payload: dict):
         """Routes a service request to local, Lambda or API Gateway
 
         Args:
             service_name (str): the service to make the HTTP request to
             service_version (int): version number of the service
-            service_function_name (str): the Lambda function name (is this needed here?)
             payload (dict): request body for the request
 
         Returns:
@@ -36,9 +30,8 @@ class ServiceProxy:
             raise ServiceNotFoundError(service_directory)
         lambda_config = service_config.get("lambda", {})
         api_gateway_config = service_config.get("api_gateway", {})
-        stage = get_config("stage")
 
-        if stage == "local":
+        if get_config("stage", "local") == "local":
             http = Http()
             data = http.make_api_request(
                 service_name=service_name,
@@ -47,8 +40,14 @@ class ServiceProxy:
                 local_request=True,
             )
         elif lambda_config:
-            # TODO(sam) instantiate lambda proxy etc
-            pass
+            service_function_name = lambda_config.get("function_name")
+            lambda_proxy = LambdaProxy()
+            data = lambda_proxy.invoke_lambda_function(
+                service_name=service_name,
+                service_version=service_version,
+                service_function_name=service_function_name,
+                payload=payload,
+            )
         elif api_gateway_config:
             http = Http()
             data = http.make_api_request(

@@ -6,9 +6,6 @@ from manageconf import get_config
 
 from services.service_proxy import ServiceProxy
 
-# TODO(sam) delete import after dev is complete
-# from .weather_data import WEATHER_DATA
-
 
 def index(request):
     return render(request, "home/home.html")
@@ -41,10 +38,7 @@ def home_view(request):
     default_location_short_name = get_config("default_location_short_name", "ldn")
     payload = {"name": default_location_short_name}
     weather_data = ServiceProxy.service_request(
-        service_name="met_service",
-        service_version=1,
-        service_function_name="GetWeatherFunction",
-        payload=payload,
+        service_name="met_service", service_version=1, payload=payload
     )
     if weather_data:
         location = get_config("default_location_name", "London")
@@ -55,21 +49,11 @@ def home_view(request):
 
 @login_required
 def weather_view(request):
-    default_location_short_name = get_config("default_location_short_name", "ldn")
-    payload = {"name": default_location_short_name}
-    weather_data = ServiceProxy.service_request(
-        service_name="met_service",
-        service_version=1,
-        service_function_name="GetWeatherFunction",
-        payload=payload,
-    )
-    print(weather_data)
     context = {}
     return render(request, "home/weather_page.html", context=context)
 
 
 def parse_weather_data(weather_data: dict) -> dict:
-    # weather_data = WEATHER_DATA
     current_temp = weather_data.get("currently").get("temperature")
     if current_temp is not None:
         current_temp = round(current_temp)
