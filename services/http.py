@@ -36,14 +36,13 @@ class Http:
             payload (dict): request body for the request
 
         Returns:
-            str: JSON response from the service
+            str: JSON response
         """
         if local_request:
             self._build_local_headers(service_name=service_name)
             url = self._build_local_url(service_name=service_name)
         else:
             url = self._build_api_gateway_url(service_name=service_name)
-
         json_payload = json.dumps(payload)
         try:
             response = requests.request(
@@ -60,13 +59,10 @@ class Http:
             return {}
 
     def _build_local_headers(self, service_name: str):
-        """Builds the headers for local requests
+        """Adds to the headers for local requests using Postman mock server
 
         Args:
             service_name (str): the service to make the HTTP request to
-
-        Returns:
-            dict: headers
         """
         service_directory = get_config("service_directory", {})
         try:
