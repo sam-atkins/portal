@@ -21,60 +21,29 @@ class Http:
             "cache-control": "no-cache",
         }
 
-    def make_local_request(
-        self, service_name: str, service_version: int, payload: dict
+    def make_api_request(
+        self,
+        service_name: str,
+        service_version: int,
+        payload: dict,
+        local_request: bool = False,
     ):
-        """Makes a HTTP request to a locally running service
+        """Makes a HTTP request to local API or AWS API Gateway endpoint
 
         Args:
             service_name (str): the service to make the HTTP request to
             service_version (int): version number of the service
-            service_function_name (str): the Lambda function name (is this needed here?)
             payload (dict): request body for the request
 
         Returns:
             str: JSON response from the service
         """
-        self._build_local_headers(service_name=service_name)
-        url = self._build_local_url(service_name=service_name)
-        json_payload = json.dumps(payload)
-        try:
-            response = requests.request(
-                "POST", url, data=json_payload, headers=self.headers
-            )
-            if response.status_code <= 300:
-                return response.text
-            else:
-                response.raise_for_status
-        # TODO(sam) fine tune exception handling
-        except Exception as ex:
-            # log to Cloudwatch
-            print(ex)
-            return {}
+        if local_request:
+            self._build_local_headers(service_name=service_name)
+            url = self._build_local_url(service_name=service_name)
+        else:
+            url = self._build_api_gateway_url(service_name=service_name)
 
-    def make_api_gateway_request(
-        self, service_name: str, service_version: int, payload: dict
-    ):
-        """Makes a HTTP request to an AWS API Gateway endpoint
-
-        Args:
-            service_name (str): the service to make the HTTP request to
-            service_version (int): version number of the service
-            service_function_name (str): the Lambda function name (is this needed here?)
-            payload (dict): request body for the request
-
-        Returns:
-            str: JSON response from the service
-        """
-        service_directory = get_config("service_directory", {})
-        try:
-            service_config = service_directory.get(service_name).get("api_gateway")
-        except AttributeError:
-            raise ServiceNotFoundError(service_directory)
-        protocol = service_config.get("protocol")
-        hostname = service_config.get("hostname")
-        path = service_config.get("path")
-        url = f"{protocol}{hostname}/{path}"
         json_payload = json.dumps(payload)
         try:
             response = requests.request(
@@ -118,7 +87,7 @@ class Http:
             service_name (str): the service to make the HTTP request to
 
         Returns:
-            str: the url
+            str: url
         """
         service_directory = get_config("service_directory", {})
         try:
@@ -134,3 +103,23 @@ class Http:
         else:
             url = f"{protocol}{hostname}:{port}/{path}"
         return url
+
+    @classmethod
+    def _build_api_gateway_url(cls, service_name: str) -> str:
+        """Builds the url for requests to AWS API Gateway endpoints
+
+        Args:
+            service_name (str): the service to make the HTTP request to
+
+        Returns:
+            str: url
+        """
+        service_directory = get_config("service_directory", {})
+        try:
+            service_config = service_directory.get(service_name).get("api_gateway")
+        except AttributeError:
+            raise ServiceNotFoundError(service_directory)
+        protocol = service_config.get("protocol")
+        hostname = service_config.get("hostname")
+        path = service_config.get("path")
+        return f"{protocol}{hostname}/{path}"

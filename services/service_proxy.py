@@ -29,50 +29,37 @@ class ServiceProxy:
         Returns:
             dict: Response from the service
         """
-        # TODO(sam) commented out for dev only
-        # if cls._is_local:
-        #     http = Http()
-        #     data = http.make_local_request(
-        #         service_name=service_name,
-        #         service_version=service_version,
-        #         payload=payload,
-        #     )
-        #     if isinstance(data, str):
-        #         return cls._decode(data)
-        #     return data
-        # TODO(sam) determine if lambda invoke or API gateway
         service_directory = get_config("service_directory", {})
         try:
             service_config = service_directory.get(service_name, {})
         except AttributeError:
             raise ServiceNotFoundError(service_directory)
         lambda_config = service_config.get("lambda", {})
-        if lambda_config:
+        api_gateway_config = service_config.get("api_gateway", {})
+        stage = get_config("stage")
+
+        if stage == "local":
+            http = Http()
+            data = http.make_api_request(
+                service_name=service_name,
+                service_version=service_version,
+                payload=payload,
+                local_request=True,
+            )
+        elif lambda_config:
             # TODO(sam) instantiate lambda proxy etc
             pass
-        api_gateway_config = service_config.get("api_gateway", {})
-        if api_gateway_config:
+        elif api_gateway_config:
             http = Http()
-            data = http.make_api_gateway_request(
+            data = http.make_api_request(
                 service_name=service_name,
                 service_version=service_version,
                 payload=payload,
             )
-            if isinstance(data, str):
-                return cls._decode(data)
-            return data
 
-    @classmethod
-    def _is_local(cls):
-        """Determines if stage is local
-
-        Returns:
-            bool: Returns true if stage is local
-        """
-        stage = get_config("stage")
-        if stage == "local":
-            return True
-        return False
+        if isinstance(data, str):
+            return cls._decode(data)
+        return data
 
     @classmethod
     def _decode(cls, json_object: str) -> dict:
