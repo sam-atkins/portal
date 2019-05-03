@@ -5,6 +5,11 @@
   "SECRET_KEY": "+_^74_c46ppq5g@v-^w79^$h3kv_6#!l#grtbpof7aglkolbra",
   "DB_ENGINE": "django.db.backends.sqlite3",
   "DB_NAME": "db.sqlite3",
-  "default_location_name": "London",
-  "default_location_short_name": "ldn"
+  "default_weather_location": "ldn__london",
+  "weather_locations": [
+    "wsz__warsaw",
+    "muc__munich",
+    "bar__barcelona",
+    "sfo__san_francisco"
+  ]
 }

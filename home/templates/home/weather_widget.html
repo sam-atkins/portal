@@ -1,14 +1,15 @@
-<div>
-  <h3>Weather</h3>
-  {% if weather_data %}
+<h1>Weather</h1>
+{% if weather_data %}
+{% for location in weather_data %}
+  <h2>{{ location.name|title }}</h2>
   <p>
-    The weather in {{ location }} is currently {{ current_temp }}°C.
-    Today is forecasted to be {{ current_summary|lower }}.
+    The weather is currently {{ location.current_temp }}°C.
+    Today is forecasted to be {{ location.current_summary|lower }}.
   </p>
   <p>
-    5 day forecast: {{ forecast_summary }}
+    5 day forecast: {{ location.forecast_summary }}
   </p>
-  {% else %}
+{% endfor %}
+{% else %}
   <p>Unable to get weather data</p>
-  {% endif %}
-</div>
+{% endif %}
