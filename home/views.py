@@ -35,18 +35,7 @@ def logout_view(request):
 
 @login_required
 def home_view(request):
-    context = {"weather": False}
-    default_location = get_config("default_weather_location", "ldn__london")
-    default_location_names = split_strings(original_string=default_location)
-    payload = {"name": default_location_names[0]}
-    weather_data = ServiceProxy.service_request(
-        service_name="met_service", service_version=1, payload=payload
-    )
-    if weather_data:
-        parsed_weather_data = parse_weather_data(
-            location_name=default_location_names[1], weather_data=weather_data
-        )
-        context = {"weather": True, "weather_data": [{**parsed_weather_data}]}
+    context = {}
     return render(request, "home/home.html", context=context)
 
 
@@ -54,11 +43,7 @@ def home_view(request):
 def weather_view(request):
     # TODO(sam) use cache to minimise API requests
     context = {"weather": False, "weather_data": []}
-
     locations = get_config("weather_locations", [])
-    default_location = get_config("default_weather_location", "ldn__london")
-    locations.insert(0, default_location)
-
     for location in locations:
         location_name = split_strings(original_string=location)
         payload = {"name": location_name[0]}
