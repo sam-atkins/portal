@@ -30,6 +30,7 @@ class ServiceProxy:
             raise ServiceNotFoundError(service_directory)
         lambda_config = service_config.get("lambda", {})
         api_gateway_config = service_config.get("api_gateway", {})
+        data = {}
 
         if get_config("stage", "local") == "local":
             http = Http()
