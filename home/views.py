@@ -47,7 +47,8 @@ def weather_view(request):
     for location in locations:
         location_name = split_strings(original_string=location)
         payload = {"name": location_name[0]}
-        weather_data = ServiceProxy.service_request(
+        service_proxy = ServiceProxy()
+        weather_data = service_proxy.service_request(
             service_name="met_service", service_version=1, payload=payload
         )
         if weather_data:

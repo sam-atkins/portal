@@ -1,3 +1,5 @@
+from unittest.mock import patch
+
 from django.test import TestCase
 
 from home.views import parse_weather_data
@@ -66,7 +68,8 @@ class WeatherViewTestCase(TestCase):
             CustomUser.objects.get_or_create(username="testuser")[0]
         )
 
-    def test_logged_in_user_weather_view_returns_200(self):
+    @patch("home.views.ServiceProxy.service_request", return_value=WEATHER_DATA)
+    def test_logged_in_user_weather_view_returns_200(self, mock_service_proxy):
         response = self.client.get("/weather/")
         self.assertEqual(response.status_code, 200)
 
