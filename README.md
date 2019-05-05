@@ -5,10 +5,21 @@
 
 ## Table of Contents
 
+- [Description](#description)
 - [Install](#install)
 - [Dev](#dev)
 - [Tests](#tests)
 - [Deploy](#deploy)
+
+## Description
+
+This is a learning project, primarily experimenting with a micro-service Serverless architecture.
+
+The project includes:
+
+- Django web app deployed with Zappa to run on AWS Lambda (this repo)
+- `manageconf` [PyPi package](https://pypi.org/project/manageconf/) to manage configuration and service discovery
+- [Met service](https://github.com/sam-atkins/met-service) to fetch weather data
 
 ## Install
 
