@@ -24,6 +24,11 @@ class ServiceProxy:
             dict: Response from the service
         """
         service_directory = get_config("service_directory", {})
+        if service_directory is None:
+            # Log to CloudWatch
+            print(
+                f"service_directory is {service_directory}, validate param store config"
+            )
         try:
             service_config = service_directory.get(service_name, {})
         except AttributeError:
