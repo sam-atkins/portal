@@ -80,3 +80,9 @@ def parse_weather_data(location_name: str, weather_data: dict) -> dict:
         "forecast_summary": forecast_summary,
         "forecast_summary_icon": forecast_summary_icon,
     }
+
+
+@login_required()
+def finance_view(request):
+    context = {}
+    return render(request, "home/finance_page.html", context=context)
