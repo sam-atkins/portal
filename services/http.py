@@ -25,6 +25,7 @@ class Http:
         self,
         service_name: str,
         service_version: int,
+        function_name: str,
         payload: dict,
         local_request: bool = False,
     ):
@@ -33,6 +34,7 @@ class Http:
         Args:
             service_name (str): the service to make the HTTP request to
             service_version (int): version number of the service
+            function_name (str): name of the function to invoke
             payload (dict): request body for the request
 
         Returns:
@@ -42,7 +44,11 @@ class Http:
             self._build_local_headers(service_name=service_name)
             url = self._build_local_url(service_name=service_name)
         else:
-            url = self._build_api_gateway_url(service_name=service_name)
+            url = self._build_api_gateway_url(
+                service_name=service_name,
+                service_version=service_version,
+                function_name=function_name,
+            )
         json_payload = json.dumps(payload)
         try:
             response = requests.request(
@@ -100,8 +106,11 @@ class Http:
             url = f"{protocol}{hostname}:{port}/{path}"
         return url
 
+    # TODO(sam) move to service proxy as helper method
     @classmethod
-    def _build_api_gateway_url(cls, service_name: str) -> str:
+    def _build_api_gateway_url(
+        cls, service_name: str, service_version: int, function_name: str
+    ) -> str:
         """Builds the url for requests to AWS API Gateway endpoints
 
         Args:
@@ -112,10 +121,12 @@ class Http:
         """
         service_directory = get_config("service_directory", {})
         try:
-            service_config = service_directory.get(service_name).get("api_gateway")
+            service_config = service_directory.get(
+                f"{service_name}__v{service_version}", {}
+            ).get("api_gateway")
         except AttributeError:
             raise ServiceNotFoundError(service_directory)
         protocol = service_config.get("protocol")
         hostname = service_config.get("hostname")
         path = service_config.get("path")
-        return f"{protocol}{hostname}/{path}"
+        return f"{protocol}{hostname}/{path}/{function_name}"

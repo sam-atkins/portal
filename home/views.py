@@ -49,7 +49,10 @@ def weather_view(request):
         payload = {"name": location_name[0]}
         service_proxy = ServiceProxy()
         weather_data = service_proxy.service_request(
-            service_name="met_service", service_version=1, payload=payload
+            service_name="met_service",
+            service_version=1,
+            function_name="weather",
+            payload=payload,
         )
         if weather_data:
             context["weather"] = True
