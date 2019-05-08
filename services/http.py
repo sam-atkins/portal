@@ -4,8 +4,6 @@ import json
 from manageconf import get_config
 import requests
 
-from .exceptions import ServiceNotFoundError
-
 
 class Http:
     """HTTP requests to local or via AWS API Gateway (Lambda Proxy)"""
@@ -22,32 +20,22 @@ class Http:
         }
 
     def make_api_request(
-        self,
-        service_name: str,
-        service_version: int,
-        function_name: str,
-        payload: dict,
-        local_request: bool = False,
+        self, service_name: str, url: str, payload: dict, request_type: str = "remote"
     ):
         """Makes a HTTP request to local API or AWS API Gateway endpoint
 
         Args:
             service_name (str): the service to make the HTTP request to
-            service_version (int): version number of the service
-            function_name (str): name of the function to invoke
+            url (str): url for the HTTP request
             payload (dict): request body for the request
+            request_type (str): enum for request, either remote, mock_server or localhost
 
         Returns:
             str: JSON response
         """
-        if local_request:
-            self._build_local_headers(service_name=service_name)
-            url = self._build_local_url(service_name=service_name)
-        else:
-            url = self._build_api_gateway_url(
-                service_name=service_name,
-                service_version=service_version,
-                function_name=function_name,
+        if request_type == "mock_server":
+            self.headers["x-api-key"] = get_config(
+                f"POSTMAN_MOCK_SERVER_API_KEY_{service_name.upper()}"
             )
         json_payload = json.dumps(payload)
         try:
@@ -63,70 +51,3 @@ class Http:
             # log to Cloudwatch
             print(ex)
             return {}
-
-    def _build_local_headers(self, service_name: str):
-        """Adds to the headers for local requests using Postman mock server
-
-        Args:
-            service_name (str): the service to make the HTTP request to
-        """
-        service_directory = get_config("service_directory", {})
-        try:
-            service_config = service_directory.get(service_name).get("local")
-        except AttributeError:
-            raise ServiceNotFoundError(service_directory)
-        request_type = service_config.get("request_type")
-        if request_type == "mock_server":
-            self.headers["x-api-key"] = get_config(
-                f"POSTMAN_MOCK_SERVER_API_KEY_{service_name.upper()}"
-            )
-
-    @classmethod
-    def _build_local_url(cls, service_name: str) -> str:
-        """Builds the localhost url for requests to local services
-
-        Args:
-            service_name (str): the service to make the HTTP request to
-
-        Returns:
-            str: url
-        """
-        service_directory = get_config("service_directory", {})
-        try:
-            service_config = service_directory.get(service_name).get("local")
-        except AttributeError:
-            raise ServiceNotFoundError(service_directory)
-        protocol = service_config.get("protocol")
-        hostname = service_config.get("hostname")
-        port = service_config.get("port")
-        path = service_config.get("path")
-        if port is None:
-            url = f"{protocol}{hostname}/{path}"
-        else:
-            url = f"{protocol}{hostname}:{port}/{path}"
-        return url
-
-    # TODO(sam) move to service proxy as helper method
-    @classmethod
-    def _build_api_gateway_url(
-        cls, service_name: str, service_version: int, function_name: str
-    ) -> str:
-        """Builds the url for requests to AWS API Gateway endpoints
-
-        Args:
-            service_name (str): the service to make the HTTP request to
-
-        Returns:
-            str: url
-        """
-        service_directory = get_config("service_directory", {})
-        try:
-            service_config = service_directory.get(
-                f"{service_name}__v{service_version}", {}
-            ).get("api_gateway")
-        except AttributeError:
-            raise ServiceNotFoundError(service_directory)
-        protocol = service_config.get("protocol")
-        hostname = service_config.get("hostname")
-        path = service_config.get("path")
-        return f"{protocol}{hostname}/{path}/{function_name}"

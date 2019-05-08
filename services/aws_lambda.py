@@ -7,18 +7,10 @@ import boto3
 class LambdaProxy:
     """Invokes requests to Lambda functions"""
 
-    def invoke_lambda_function(
-        self,
-        service_name: str,
-        service_version: int,
-        service_function_name: str,
-        payload: dict,
-    ):
+    def invoke_lambda_function(self, service_function_name: str, payload: dict):
         """Invoke a Lambda function
 
         Args:
-            service_name (str): the service to make the HTTP request to
-            service_version (int): version number of the service (currently unused)
             service_function_name (str): the Lambda function name
             payload (dict): request body for the request
 
