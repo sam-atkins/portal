@@ -9,6 +9,9 @@
         It is {% now "jS M Y, H:i T" %}.
       </p>
     </div>
+    <div>
+      {% include "home/weather_widget.html" %}
+    </div>
   {% else %}
     <p>You are not logged in</p>
   {% endif %}
