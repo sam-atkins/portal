@@ -24,4 +24,4 @@ class CurrencyExchangeForm(forms.Form):
     target_currency = forms.ChoiceField(
         widget=forms.Select, choices=CURRENCY_CHOICES, required=True, initial=EURO
     )
-    amount = forms.IntegerField(widget=forms.NumberInput, required=True)
+    base_amount = forms.FloatField(widget=forms.NumberInput, required=True)

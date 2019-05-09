@@ -12,6 +12,15 @@
         "request_type": "mock_server",
         "version": "1"
       }
+    },
+    "fx_service__v1": {
+      "local": {
+        "protocol": "http://",
+        "hostname": "fx_service",
+        "port": "3002",
+        "request_type": "localhost",
+        "version": "1"
+      }
     }
   }
 }
