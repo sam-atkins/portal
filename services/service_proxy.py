@@ -129,6 +129,8 @@ class ServiceProxy:
         path = api_config.get("path")
         if port is None:
             url = f"{protocol}{hostname}/{path}/{function_name}"
+        elif path is None:
+            url = f"{protocol}{hostname}:{port}/{function_name}"
         else:
             url = f"{protocol}{hostname}:{port}/{path}/{function_name}"
         return url
