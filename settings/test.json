@@ -1,4 +1,26 @@
 {
   "use_remote_settings": false,
-  "DEBUG": true
+  "DEBUG": true,
+  "service_directory": {
+    "met_service__v1": {
+      "api_gateway": {
+        "protocol": "https://",
+        "hostname": "ugly-url.execute-api.region.amazonaws.com",
+        "path": "Prod"
+      },
+      "lambda": {
+        "function__weather": "met-service-weather-function"
+      }
+    },
+    "fx_service__v1": {
+      "local": {
+        "protocol": "http://",
+        "hostname": "localhost",
+        "port": "3002",
+        "path": "",
+        "request_type": "localhost",
+        "version": "1"
+      }
+    }
+  }
 }
