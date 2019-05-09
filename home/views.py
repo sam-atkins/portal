@@ -5,6 +5,7 @@ from django.shortcuts import redirect, render
 from manageconf import get_config
 
 from services.service_proxy import ServiceProxy
+from .forms import CurrencyExchangeForm
 from .utils import split_strings
 
 
@@ -40,13 +41,16 @@ def home_view(request):
     if location is not None:
         location_name = split_strings(original_string=location)
         payload = {"name": location_name[0]}
-        service_proxy = ServiceProxy()
-        weather_data = service_proxy.service_request(
-            service_name="met_service",
-            service_version=1,
-            function_name="weather",
-            payload=payload,
-        )
+        try:
+            service_proxy = ServiceProxy()
+            weather_data = service_proxy.service_request(
+                service_name="met_service",
+                service_version=1,
+                function_name="weather",
+                payload=payload,
+            )
+        except Exception:
+            weather_data = {}
         if weather_data:
             context["weather"] = True
             location = get_config("default_location_name", "London")
@@ -66,13 +70,16 @@ def weather_view(request):
     for location in locations:
         location_name = split_strings(original_string=location)
         payload = {"name": location_name[0]}
-        service_proxy = ServiceProxy()
-        weather_data = service_proxy.service_request(
-            service_name="met_service",
-            service_version=1,
-            function_name="weather",
-            payload=payload,
-        )
+        try:
+            service_proxy = ServiceProxy()
+            weather_data = service_proxy.service_request(
+                service_name="met_service",
+                service_version=1,
+                function_name="weather",
+                payload=payload,
+            )
+        except Exception:
+            weather_data = {}
         if weather_data:
             context["weather"] = True
             location = get_config("default_location_name", "London")
@@ -103,8 +110,9 @@ def parse_weather_data(location_name: str, weather_data: dict) -> dict:
         "forecast_summary_icon": forecast_summary_icon,
     }
 
-
 @login_required()
 def finance_view(request):
-    context = {}
-    return render(request, "home/finance_page.html", context=context)
+    # context = {}
+    # context["form"] = form
+    form = CurrencyExchangeForm()
+    return render(request, "home/finance_page.html", {"form": form})

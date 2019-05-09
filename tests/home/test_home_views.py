@@ -17,16 +17,19 @@ class HomeViewsLoggedInUserTestCase(TestCase):
         response = self.client.get("/")
         self.assertEqual(response.status_code, 200)
 
-    def test_logged_in_user_index_renders_home_html(self):
+    @patch("home.views.ServiceProxy.service_request", return_value=WEATHER_DATA)
+    def test_logged_in_user_index_renders_home_html(self, mock_service_proxy):
         response = self.client.get("/")
         self.assertTemplateUsed(response, "home/base.html", "home/home.html")
         self.assertTemplateUsed(response, "home/nav.html")
 
-    def test_logged_in_user_home_returns_200(self):
+    @patch("home.views.ServiceProxy.service_request", return_value=WEATHER_DATA)
+    def test_logged_in_user_home_returns_200(self, mock_service_proxy):
         response = self.client.get("/home/")
         self.assertEqual(response.status_code, 200)
 
-    def test_logged_in_user_home_renders_home_html(self):
+    @patch("home.views.ServiceProxy.service_request", return_value=WEATHER_DATA)
+    def test_logged_in_user_home_renders_home_html(self, mock_service_proxy):
         response = self.client.get("/home/")
         self.assertTemplateUsed(response, "home/base.html", "home/home.html")
         self.assertTemplateUsed(response, "home/nav.html")
@@ -73,7 +76,8 @@ class WeatherViewTestCase(TestCase):
         response = self.client.get("/weather/")
         self.assertEqual(response.status_code, 200)
 
-    def test_logged_in_user_weather_renders_weather_html(self):
+    @patch("home.views.ServiceProxy.service_request", return_value=WEATHER_DATA)
+    def test_logged_in_user_weather_renders_weather_html(self, mock_service_proxy):
         response = self.client.get("/home/")
         self.assertTemplateUsed(response, "home/base.html", "home/weather_page.html")
 

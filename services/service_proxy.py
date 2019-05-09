@@ -70,15 +70,15 @@ class ServiceProxy:
     @classmethod
     def _get_service_config(cls, service_name: str, service_version: int) -> dict:
         service_directory = get_config("service_directory", {})
-        if service_directory is None:
-            # Log to CloudWatch
-            print(
-                f"service_directory is {service_directory}, validate param store config"
-            )
         try:
-            return service_directory.get(f"{service_name}__v{service_version}", {})
+            service_config = service_directory.get(
+                f"{service_name}__v{service_version}"
+            )
         except AttributeError:
             raise ServiceNotFoundError(service_directory)
+        if service_config is None:
+            raise ServiceNotFoundError(service_directory)
+        return service_config
 
     @classmethod
     def _determine_local_request_type(cls, local_config: dict):
