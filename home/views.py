@@ -1,6 +1,7 @@
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
+from django.http import HttpResponseRedirect
 from django.shortcuts import redirect, render
 from manageconf import get_config
 
@@ -110,9 +111,18 @@ def parse_weather_data(location_name: str, weather_data: dict) -> dict:
         "forecast_summary_icon": forecast_summary_icon,
     }
 
+
 @login_required()
 def finance_view(request):
-    # context = {}
-    # context["form"] = form
-    form = CurrencyExchangeForm()
+    if request.method == "POST":
+        form = CurrencyExchangeForm(request.POST)
+        if form.is_valid():
+            base_currency = form.cleaned_data["base_currency"]
+            target_currency = form.cleaned_data["target_currency"]
+            amount = form.cleaned_data["amount"]
+            # TODO(sam) remove debug print statement after dev
+            print(base_currency, target_currency, amount)
+            return HttpResponseRedirect("/finance/")
+    else:
+        form = CurrencyExchangeForm()
     return render(request, "home/finance_page.html", {"form": form})

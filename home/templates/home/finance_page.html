@@ -1,4 +1,9 @@
 {% extends "home/base.html" %}
 {% block content %}
   <h2>Finance</h2>
+  <form action="/finance/" method="post">
+    {% csrf_token %}
+    {{ form }}
+    <input type="submit" value="Submit">
+  </form>
 {% endblock %}
