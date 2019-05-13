@@ -1,0 +1,21 @@
+{% extends "home/base.html" %}
+{% block content %}
+  <h2>Finance</h2>
+  <form action="{% url 'finance' %}" method="post">
+    {% csrf_token %}
+    {{ form }}
+    <input type="submit" value="Submit">
+  </form>
+  {% if fx %}
+  <div>
+    <span>
+      Result: {{ base_currency }} {{ base_amount }} equals {{ result_currency }} {{ result_amount }}
+    </span>
+  </div>
+  {% endif %}
+  {% if fx_error %}
+  <div>
+    Unable to get exchange rates
+  </div>
+  {% endif %}
+{% endblock %}

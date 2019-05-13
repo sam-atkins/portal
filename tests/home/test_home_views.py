@@ -2,9 +2,10 @@ from unittest.mock import patch
 
 from django.test import TestCase
 
-from home.views import parse_weather_data
+from home.views import parse_weather_data, build_finance_view_context
 from users.models import CustomUser
 from tests.datasets.weather_data import WEATHER_DATA
+from tests.datasets.finance_data import FX_CONVERSION_DATA
 
 
 class HomeViewsLoggedInUserTestCase(TestCase):
@@ -17,16 +18,19 @@ class HomeViewsLoggedInUserTestCase(TestCase):
         response = self.client.get("/")
         self.assertEqual(response.status_code, 200)
 
-    def test_logged_in_user_index_renders_home_html(self):
+    @patch("home.views.ServiceProxy.service_request", return_value=WEATHER_DATA)
+    def test_logged_in_user_index_renders_home_html(self, mock_service_proxy):
         response = self.client.get("/")
         self.assertTemplateUsed(response, "home/base.html", "home/home.html")
         self.assertTemplateUsed(response, "home/nav.html")
 
-    def test_logged_in_user_home_returns_200(self):
+    @patch("home.views.ServiceProxy.service_request", return_value=WEATHER_DATA)
+    def test_logged_in_user_home_returns_200(self, mock_service_proxy):
         response = self.client.get("/home/")
         self.assertEqual(response.status_code, 200)
 
-    def test_logged_in_user_home_renders_home_html(self):
+    @patch("home.views.ServiceProxy.service_request", return_value=WEATHER_DATA)
+    def test_logged_in_user_home_renders_home_html(self, mock_service_proxy):
         response = self.client.get("/home/")
         self.assertTemplateUsed(response, "home/base.html", "home/home.html")
         self.assertTemplateUsed(response, "home/nav.html")
@@ -73,8 +77,9 @@ class WeatherViewTestCase(TestCase):
         response = self.client.get("/weather/")
         self.assertEqual(response.status_code, 200)
 
-    def test_logged_in_user_weather_renders_weather_html(self):
-        response = self.client.get("/home/")
+    @patch("home.views.ServiceProxy.service_request", return_value=WEATHER_DATA)
+    def test_logged_in_user_weather_renders_weather_html(self, mock_service_proxy):
+        response = self.client.get("/weather/")
         self.assertTemplateUsed(response, "home/base.html", "home/weather_page.html")
 
 
@@ -82,11 +87,11 @@ class WeatherViewLoggedOutUserTestCase(TestCase):
     def test_weather_view_redirects(self):
         response = self.client.get("/weather/")
         self.assertEqual(response.status_code, 302)
+        self.assertTemplateNotUsed(response, "home/weather_page.html")
 
     def test_logged_out_user_weather_view_renders_login_html(self):
-        response = self.client.get("/", follow=True)
-        self.assertTemplateUsed(response, "home/base.html", "registration/login.html")
-        self.assertTemplateUsed(response, "home/nav.html")
+        response = self.client.get("/weather/", follow=True)
+        self.assertTemplateNotUsed(response, "home/weather_page.html")
 
 
 class ParseWeatherData(TestCase):
@@ -94,10 +99,78 @@ class ParseWeatherData(TestCase):
         weather_data = parse_weather_data(
             location_name="san_francisco", weather_data=WEATHER_DATA
         )
-        assert weather_data == {
-            "name": "san francisco",
-            "current_temp": 14,
-            "current_summary": "Mostly Cloudy",
-            "forecast_summary": "Light rain tomorrow, with high temperatures rising to 20°C on Wednesday.",  # noqa E501
-            "forecast_summary_icon": "rain",
-        }
+        self.assertEqual(
+            weather_data,
+            {
+                "name": "san francisco",
+                "current_temp": 14,
+                "current_summary": "Mostly Cloudy",
+                "forecast_summary": "Light rain tomorrow, with high temperatures rising to 20°C on Wednesday.",  # noqa E501
+                "forecast_summary_icon": "rain",
+            },
+        )
+
+
+class FinanceViewLoggedOutUserTestCase(TestCase):
+    def test_finance_view_redirects(self):
+        response = self.client.get("/finance/")
+        self.assertEqual(response.status_code, 302)
+        self.assertTemplateNotUsed(response, "home/finance_page.html")
+
+    def test_logged_out_user_finance_view_renders_login_html(self):
+        response = self.client.get("/finance/", follow=True)
+        self.assertTemplateNotUsed(response, "home/finance_page.html")
+
+
+class FinanceViewLoggedInUserTestCase(TestCase):
+    def setUp(self):
+        self.client.force_login(
+            CustomUser.objects.get_or_create(username="testuser")[0]
+        )
+
+    @patch("home.views.ServiceProxy.service_request", return_value=FX_CONVERSION_DATA)
+    def test_logged_in_user_finance_view_returns_200(self, mock_service_proxy):
+        response = self.client.get("/finance/")
+        self.assertEqual(response.status_code, 200)
+
+    @patch("home.views.ServiceProxy.service_request", return_value=FX_CONVERSION_DATA)
+    def test_logged_in_user_finance_renders_finance_html(self, mock_service_proxy):
+        response = self.client.get("/finance/")
+        self.assertTemplateUsed(response, "home/base.html", "home/finance_page.html")
+
+
+class FinanceViewHelpersTestCase(TestCase):
+    def test_build_finance_view_context_returns_full_context(self):
+        base_currency = "GBP"
+        base_amount = 10
+        result_amount = 11.1940
+        result_currency = "EUR"
+        context = build_finance_view_context(
+            base_currency=base_currency,
+            base_amount=base_amount,
+            result_amount=result_amount,
+            result_currency=result_currency,
+        )
+        self.assertEqual(
+            context,
+            {
+                "fx": True,
+                "base_amount": 10,
+                "base_currency": "GBP",
+                "result_amount": 11.19,
+                "result_currency": "EUR",
+            },
+        )
+
+    def test_build_finance_view_context_returns_context_if_result_is_None(self):
+        base_currency = "GBP"
+        base_amount = 10
+        result_amount = None
+        result_currency = "EUR"
+        context = build_finance_view_context(
+            base_currency=base_currency,
+            base_amount=base_amount,
+            result_amount=result_amount,
+            result_currency=result_currency,
+        )
+        self.assertEqual(context, {"fx_error": True})

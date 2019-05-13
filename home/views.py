@@ -1,3 +1,5 @@
+from typing import Union
+
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
@@ -5,6 +7,7 @@ from django.shortcuts import redirect, render
 from manageconf import get_config
 
 from services.service_proxy import ServiceProxy
+from .forms import CurrencyExchangeForm
 from .utils import split_strings
 
 
@@ -35,7 +38,29 @@ def logout_view(request):
 
 @login_required
 def home_view(request):
-    context = {}
+    context = {"weather": False, "weather_data": []}
+    location = get_config("default_weather_location")
+    if location is not None:
+        location_name = split_strings(original_string=location)
+        payload = {"name": location_name[0]}
+        try:
+            service_proxy = ServiceProxy()
+            weather_data = service_proxy.service_request(
+                service_name="met_service",
+                service_version=1,
+                function_name="weather",
+                payload=payload,
+            )
+        except Exception:
+            weather_data = {}
+        if weather_data:
+            context["weather"] = True
+            location = get_config("default_location_name", "London")
+            parsed_weather_data = parse_weather_data(
+                location_name=location_name[1], weather_data=weather_data
+            )
+            weather_data = context.get("weather_data")
+            weather_data.append(parsed_weather_data)
     return render(request, "home/home.html", context=context)
 
 
@@ -47,10 +72,16 @@ def weather_view(request):
     for location in locations:
         location_name = split_strings(original_string=location)
         payload = {"name": location_name[0]}
-        service_proxy = ServiceProxy()
-        weather_data = service_proxy.service_request(
-            service_name="met_service", service_version=1, payload=payload
-        )
+        try:
+            service_proxy = ServiceProxy()
+            weather_data = service_proxy.service_request(
+                service_name="met_service",
+                service_version=1,
+                function_name="weather",
+                payload=payload,
+            )
+        except Exception:
+            weather_data = {}
         if weather_data:
             context["weather"] = True
             location = get_config("default_location_name", "London")
@@ -80,3 +111,64 @@ def parse_weather_data(location_name: str, weather_data: dict) -> dict:
         "forecast_summary": forecast_summary,
         "forecast_summary_icon": forecast_summary_icon,
     }
+
+
+@login_required()
+def finance_view(request):
+    if request.method == "POST":
+        form = CurrencyExchangeForm(request.POST)
+        if form.is_valid():
+            base_currency = form.cleaned_data["base_currency"]
+            target_currency = form.cleaned_data["target_currency"]
+            base_amount = form.cleaned_data["base_amount"]
+            result_amount = convert_currency(
+                base_currency=base_currency,
+                target_currency=target_currency,
+                base_amount=base_amount,
+            )
+            context = build_finance_view_context(
+                base_currency=base_currency,
+                base_amount=base_amount,
+                result_amount=result_amount,
+                result_currency=target_currency,
+            )
+            context["form"] = form
+            return render(request, "home/finance_page.html", context=context)
+    else:
+        form = CurrencyExchangeForm()
+    return render(request, "home/finance_page.html", {"form": form})
+
+
+def convert_currency(base_currency: str, target_currency: str, base_amount: int):
+    if base_currency == target_currency:
+        return base_amount
+    payload = {"base": base_currency, "target": target_currency, "amount": base_amount}
+    try:
+        service_proxy = ServiceProxy()
+        response = service_proxy.service_request(
+            service_name="fx_service",
+            service_version=1,
+            function_name="conversion",
+            payload=payload,
+        )
+        return response.get("payload")
+    except Exception:
+        return None
+
+
+def build_finance_view_context(
+    base_currency: str,
+    base_amount: int,
+    result_amount: Union[float, None],
+    result_currency: str,
+) -> dict:
+    if result_amount:
+        return {
+            "fx": True,
+            "base_amount": round(base_amount, 2),
+            "base_currency": base_currency,
+            "result_amount": round(result_amount, 2),
+            "result_currency": result_currency,
+        }
+    else:
+        return {"fx_error": True}

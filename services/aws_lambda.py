@@ -1,5 +1,6 @@
 """AWS Lambda invocations to services"""
 import json
+from typing import Any, Dict
 
 import boto3
 
@@ -8,17 +9,11 @@ class LambdaProxy:
     """Invokes requests to Lambda functions"""
 
     def invoke_lambda_function(
-        self,
-        service_name: str,
-        service_version: int,
-        service_function_name: str,
-        payload: dict,
+        self, service_function_name: str, payload: Dict[str, Any]
     ):
         """Invoke a Lambda function
 
         Args:
-            service_name (str): the service to make the HTTP request to
-            service_version (int): version number of the service (currently unused)
             service_function_name (str): the Lambda function name
             payload (dict): request body for the request
 
@@ -33,8 +28,8 @@ class LambdaProxy:
             )
             status_code = response.get("StatusCode")
             if status_code == 200:
-                payload = response.get("Payload").read()
-                data = json.loads(payload).get("body", {})
+                response_payload = response.get("Payload").read()
+                data = json.loads(response_payload).get("body", {})
                 return data
             else:
                 # log to Cloudwatch

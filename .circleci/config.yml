@@ -5,6 +5,10 @@ jobs:
     docker:
       # CircleCI Python images available at: https://hub.docker.com/r/circleci/python/
       - image: circleci/python:3.6.8
+    environment:
+        stage: test
+        project_config_dir: settings
+
     steps:
       - checkout
       - run: sudo chown -R circleci:circleci /usr/local/bin

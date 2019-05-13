@@ -17,6 +17,10 @@ services:
       AWS_DEFAULT_REGION: ${AWS_REGION}
       AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
       POSTMAN_MOCK_SERVER_API_KEY_MET_SERVICE: ${POSTMAN_MOCK_SERVER_API_KEY_MET_SERVICE}
+    networks:
+      default:
+          aliases:
+              - portal_1
   portal-test:
     build:
       context: .
@@ -30,3 +34,8 @@ services:
              coverage report"
     environment:
       stage: test
+
+networks:
+  default:
+    external:
+      name: portal_network
