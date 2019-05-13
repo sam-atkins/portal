@@ -76,7 +76,8 @@ class ServiceProxy:
             )
         except AttributeError:
             raise ServiceNotFoundError(service_directory)
-        if service_config is None:
+        if not service_config:
+            print(f"ServiceNotFoundError: service_config: {service_config}")
             raise ServiceNotFoundError(service_directory)
         return service_config
 
