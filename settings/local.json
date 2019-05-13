@@ -4,7 +4,7 @@
   "STATICFILES_STORAGE": "django.contrib.staticfiles.storage.StaticFilesStorage",
   "ALLOWED_HOSTS": ["*"],
   "service_directory": {
-    "met_service": {
+    "met_service__v1": {
       "local": {
         "protocol": "https://",
         "hostname": "bbfd7988-c3bd-4353-a21d-df934d90dd50.mock.pstmn.io",
