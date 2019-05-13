@@ -20,6 +20,7 @@ The project includes:
 - Django web app deployed with Zappa to run on AWS Lambda (this repo)
 - `manageconf` [PyPi package](https://pypi.org/project/manageconf/) to manage configuration and service discovery
 - [Met service](https://github.com/sam-atkins/met-service) to fetch weather data
+- [FX service](https://github.com/sam-atkins/fx_service) to convert currency using today's foreign exchange rate
 
 ## Install
 
