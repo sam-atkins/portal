@@ -1,0 +1,5 @@
+{
+  "include": ["home", "portal", "services", "tests"],
+  "venvPath": "env",
+  "pythonVersion": "3.6"
+}
