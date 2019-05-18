@@ -51,6 +51,13 @@ MIDDLEWARE = [
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
 ]
 
+CACHES = {
+    "default": {
+        "BACKEND": "django.core.cache.backends.db.DatabaseCache",
+        "LOCATION": "view_cache",
+    }
+}
+
 ROOT_URLCONF = "portal.urls"
 
 TEMPLATES = [

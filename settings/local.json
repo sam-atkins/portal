@@ -3,6 +3,7 @@
   "DEBUG": true,
   "STATICFILES_STORAGE": "django.contrib.staticfiles.storage.StaticFilesStorage",
   "ALLOWED_HOSTS": ["*"],
+  "CACHE_PAGE_VIEW_DURATION": 30,
   "service_directory": {
     "met_service__v1": {
       "local": {

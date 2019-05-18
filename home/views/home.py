@@ -1,9 +1,12 @@
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render
+from django.views.decorators.cache import cache_page
 from manageconf import get_config
 
-from services.service_proxy import ServiceProxy
 from home.utils import split_strings, parse_weather_data
+from services.service_proxy import ServiceProxy
+
+CACHE_PAGE_VIEW_DURATION = get_config("CACHE_PAGE_VIEW_DURATION", 30)
 
 
 def index(request):
@@ -11,6 +14,7 @@ def index(request):
 
 
 @login_required
+@cache_page(CACHE_PAGE_VIEW_DURATION)
 def home_view(request):
     context = {"weather": False, "weather_data": []}
     location = get_config("default_weather_location")

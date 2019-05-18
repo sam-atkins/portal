@@ -1,14 +1,17 @@
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render
+from django.views.decorators.cache import cache_page
 from manageconf import get_config
 
-from services.service_proxy import ServiceProxy
 from home.utils import split_strings, parse_weather_data
+from services.service_proxy import ServiceProxy
+
+CACHE_PAGE_VIEW_DURATION = get_config("CACHE_PAGE_VIEW_DURATION", 30)
 
 
 @login_required
+@cache_page(CACHE_PAGE_VIEW_DURATION)
 def weather_view(request):
-    # TODO(sam) use cache to minimise API requests
     context = {"weather": False, "weather_data": []}
     locations = get_config("weather_locations", [])
     for location in locations:
