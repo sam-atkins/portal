@@ -5,9 +5,6 @@
       <p>
         Hi {{ user.username|capfirst }}!
       </p>
-      <p>
-        It is {% now "jS M Y, H:i T" %}.
-      </p>
     </div>
     <div>
       {% include "home/weather_widget.html" %}

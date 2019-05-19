@@ -5,6 +5,7 @@
   "SECRET_KEY": "+_^74_c46ppq5g@v-^w79^$h3kv_6#!l#grtbpof7aglkolbra",
   "DB_ENGINE": "django.db.backends.sqlite3",
   "DB_NAME": "db.sqlite3",
+  "CACHE_PAGE_VIEW_DURATION": 900,
   "default_weather_location": "ldn__london",
   "weather_locations": [
     "ldn__london",
