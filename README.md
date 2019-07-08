@@ -79,7 +79,7 @@ virtualenv -p python3.6 env
 source env/bin/activate
 
 # Zappa needs the project's requirements to be installed in the virtual env
-pip install requirements-dev.txt
+pip install -r requirements-dev.txt
 
 # first time deploy
 zappa deploy dev
