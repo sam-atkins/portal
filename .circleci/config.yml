@@ -30,7 +30,7 @@ jobs:
           command: |
             . venv/bin/activate
             python manage.py test
-            coverage run --omit='/home/circleci/circleci/venv/*' manage.py test -v 2 &&
+            coverage run manage.py test -v 2 &&
             coverage html -d artifacts
       - store_artifacts:
           path: artifacts
